@@ -27,7 +27,6 @@ def get_physical_units_from_imagej_tif(tif_fn):
 
 
 def simple_bleach_correction(mov, win_size):
-    print(win_size, type(win_size))
     roi_values = mov[:, :win_size, :win_size]
     roi_values_mean = roi_values.mean(axis=(1, 2))
 
@@ -35,7 +34,7 @@ def simple_bleach_correction(mov, win_size):
     return mov_corr
 
 
-def extract_frap_profiles_and_run(
+def extract_frap_profiles_and_fit(
     mov_fn,
     bleach_correction=True,
     roi_ext_factor=1.5,
@@ -48,10 +47,14 @@ def extract_frap_profiles_and_run(
     correction_region_size=150,
 ):
 
-    roi = roifile.ImagejRoi.fromfile(mov_fn)
+    roi = roifile.ImagejRoi.fromfile(str(mov_fn))
     if len(roi) == 0:
-        print("cannot read roi from tiff file, try using .roi")
-        roi = roifile.ImagejRoi.fromfile(mov_fn[:-4] + ".roi")
+        extra_roi_file = str(mov_fn)[:-4] + ".roi"
+        if os.path.exists(extra_roi_file):
+            roi = roifile.ImagejRoi.fromfile(extra_roi_file)
+            print("Cannot read ROI from tiff file, using .roi file...")
+        else:
+            raise RuntimeError("No ROI found in '{mov_fn}' or '{extra_roi_file}'")
     else:
         roi = roi[0]
 
@@ -93,7 +96,6 @@ def extract_frap_profiles_and_run(
     # Find frame of bleaching
     time_bleach = numpy.argmax(numpy.abs(numpy.diff(roi_values_projected.mean(1)))) + 1
 
-    # Normalize
     roi_values_projected = (
         roi_values_projected / roi_values_projected[time_bleach - 1, :].mean()
     )
@@ -113,30 +115,31 @@ def extract_frap_profiles_and_run(
             f"mirror parameter not understood. Use 'first_half', 'second_half', or 'no"
         )
 
-    plt.figure()
-    for line in data:
-        plt.plot(line)
-
-    plt.show()
-
-    return
-
     I0 = data[time_bleach - 1, :].mean()
 
     data = data[time_bleach:, :]
 
     # tifffile.imsave(mov_fn[:-4] + "_bc.tiff", (mov / I0).astype("float32")[:, None, ...])
 
-    print("I0", I0)
-    print("time of bleach", time_bleach)
+    # plt.figure()
+    # for line in data:
+    #     plt.plot(line)
+
+    # plt.show()
+
+    # print("I0", I0)
+    # print("time of bleach", time_bleach)
 
     data = pandas.DataFrame(data.T)
     data.insert(0, "loc", pixel_size * numpy.arange(data.shape[0]))
 
+    print("  -- create table with projected ROI values")
     data_fn = str(mov_fn)[:-4] + f"_frap_recovery_proj.txt"
     data.to_csv(data_fn, "\t", header=False, index=False)
 
     result_fn = str(mov_fn)[:-4] + f"_results.json"
+    print("  -- run fit routine...")
+
     result = run_fitter(
         data_fn,
         mov_fn.stem,
@@ -153,6 +156,7 @@ def extract_frap_profiles_and_run(
     result["frameOfFrap"] = int(time_bleach)
     result["I0"] = I0
 
+    print("  -- saving results to json")
     with open(result_fn, "w") as fh:
         json.dump(result, fh)
 
@@ -171,6 +175,12 @@ if len(sys.argv) >= 2:
     program_description="Frap2Diffusion",
     tabbed_groups=True,
     target="frapdiff.exe",  ### https://github.com/chriskiehl/Gooey/issues/219
+    progress_regex=r"^#\s(?P<current>\d+)/(?P<total>\d+)\s###.*",
+    progress_expr="current / total * 100",
+    timing_options={
+        "show_time_remaining": True,
+        "hide_time_remaining_on_complete": True,
+    },
 )
 def main_cli():
     """
@@ -318,10 +328,12 @@ def main_cli():
         all_mov_fns = [path for path in Path(args.input_dir).glob("*.tif")]
 
     results = []
-    for mov_fn in all_mov_fns:
-        print(mov_fn)
+    n = len(all_mov_fns)
+    for i, mov_fn in enumerate(all_mov_fns):
+        print(f"# {i+1}/{n} ### {mov_fn}")
+        sys.stdout.flush()
         try:
-            result_dict = extract_frap_profiles_and_run(
+            result_dict = extract_frap_profiles_and_fit(
                 mov_fn=mov_fn,
                 bleach_correction=args.bleach_correction,
                 roi_ext_factor=args.extend,
@@ -335,8 +347,10 @@ def main_cli():
             )
             results.append(result_dict)
         except:
-            print(f"ERROR for file '{mov_fn}'")
+
+            print(f"\nERROR for file '{mov_fn}'\n")
             traceback.print_exc()
+            print()
 
     tab = pandas.DataFrame(results)
     tab.to_csv(args.output, sep="\t")

@@ -19,7 +19,8 @@
  * Details of model used is described in further detail in Gerganova et al.
  * https://www.biorxiv.org/content/10.1101/2020.12.18.423457v3
 """
-import os
+
+import os, sys
 import numpy as np
 import scipy, scipy.optimize
 import matplotlib.pyplot as plt
@@ -71,10 +72,9 @@ def run_fitter(
         # x_l = 25
 
         print(
-            "D = {0:0.6f}, koff = {1:0.6f}, Iinf = {2:0.6f}, x_l = {3:0.6f}, x_e = {3:0.3f}, x_d = {3:0.3f}".format(
-                D, koff, Iinf, x_l, x_d, x_e
-            )
+            f"    D = {D:0.6f}, koff = {koff:0.6f}, Iinf = {Iinf:0.6f}, x_l = {x_l:0.6f}, x_d = {x_d:0.3f}, x_e = {x_e:0.3f}"
         )
+        sys.stdout.flush()
 
         if x_l < 0.0:
             raise ValueError(
@@ -352,7 +352,7 @@ def run_fitter(
 
     initialParams = [D_guess, koff_guess, Iinf_guess]
 
-    print(Iinf_min, Iinf_max, Iinf_guess)
+    # print(Iinf_min, Iinf_max, Iinf_guess)
 
     data = [full_x, full_t, full_z]
 
