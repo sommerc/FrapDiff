@@ -155,6 +155,7 @@ def extract_frap_profiles_and_fit(
     result["pixelSize"] = float(pixel_size)
     result["frameOfFrap"] = int(time_bleach)
     result["I0"] = I0
+    result["File"] = str(mov_fn)
 
     print("  -- saving results to json")
     with open(result_fn, "w") as fh:

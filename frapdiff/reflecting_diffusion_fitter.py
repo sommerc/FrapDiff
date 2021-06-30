@@ -72,7 +72,7 @@ def run_fitter(
         # x_l = 25
 
         print(
-            f"    D = {D:0.6f}, koff = {koff:0.6f}, Iinf = {Iinf:0.6f}, x_l = {x_l:0.6f}, x_d = {x_d:0.3f}, x_e = {x_e:0.3f}"
+            f"     - D = {D:0.6f}, koff = {koff:0.6f}, Iinf = {Iinf:0.6f}, x_l = {x_l:0.6f}"
         )
         sys.stdout.flush()
 
@@ -405,16 +405,17 @@ def run_fitter(
     # print("R-squared_mean = " + str(np.mean(Rsquared_array)))1
     # print(filepath)
     # print('fitted prameters', fittedParameters)
-    print("D", fittedParameters[0])
-    print("koff", fittedParameters[1])
-    print("R-squared", Rsquared)
-    print("Iinf", fittedParameters[2])
-    print(
-        "x_l",
-        (fittedParameters[2] * (x_d - x_e) + result)
-        / (2 * fittedParameters[2] - I0 - I1),
-    )
-    print("I0", I0)
+    # print("D", fittedParameters[0])
+    # print("koff", fittedParameters[1])
+    # print("R-squared", Rsquared)
+    # print("Iinf", fittedParameters[2])
+    # print(
+    #     "x_l",
+    #     (fittedParameters[2] * (x_d - x_e) + result)
+    #     / (2 * fittedParameters[2] - I0 - I1),
+    # )
+    # print("I0", I0)
+    print("    -----------------------------------------------")
 
     xl = (fittedParameters[2] * (x_d - x_e) + result) / (
         2 * fittedParameters[2] - I0 - I1
