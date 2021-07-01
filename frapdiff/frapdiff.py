@@ -58,9 +58,9 @@ def extract_frap_profiles_and_fit(
     else:
         roi = roi[0]
 
-    pixel_size, finterval = get_physical_units_from_imagej_tif(mov_fn)
+    pixel_size, finterval = get_physical_units_from_imagej_tif(str(mov_fn))
 
-    mov = tifffile.imread(mov_fn)
+    mov = tifffile.imread(str(mov_fn))
     if bleach_correction:
         mov = simple_bleach_correction(mov, correction_region_size)
 
