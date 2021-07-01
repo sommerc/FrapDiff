@@ -39,7 +39,7 @@ result_dict = frapdiff.extract_frap_profiles_and_fit(
 3. `pip install -e .`
 
 ### pip (current master)
-pip install git+https://git.ist.ac.at/csommer/frapdiff
+`pip install git+https://git.ist.ac.at/csommer/frapdiff`
 
 ### Dependencies (automatically installed via pip)
 numpy, pandas, tifffile, roifile, Gooey, wxPython, scipy, matplotlib
