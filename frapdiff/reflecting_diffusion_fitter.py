@@ -415,7 +415,7 @@ def run_fitter(
     #     / (2 * fittedParameters[2] - I0 - I1),
     # )
     # print("I0", I0)
-    print("    -----------------------------------------------")
+    print("    ---------------------------------------------------------------")
 
     xl = (fittedParameters[2] * (x_d - x_e) + result) / (
         2 * fittedParameters[2] - I0 - I1

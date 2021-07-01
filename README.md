@@ -7,7 +7,7 @@ in Gerganova et al. https://www.biorxiv.org/content/10.1101/2020.12.18.423457v3
 
 ### 1. GUI
 
-Open a command-line shell and type.
+Open a (Anaconda) command-line shell and type.
 `frapdiff`
 ### 2. Command-line interface
 
@@ -33,7 +33,12 @@ result_dict = frapdiff.extract_frap_profiles_and_fit(
 ```
 
 ## Installation
-### pip
+### pip (developer, recommended)
+1. Clone this repository
+2. `cd frapdiff`
+3. `pip install -e .`
+
+### pip (current master)
 pip install git+https://git.ist.ac.at/csommer/frapdiff
 
 ### Dependencies (automatically installed via pip)

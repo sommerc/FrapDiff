@@ -172,8 +172,8 @@ if len(sys.argv) >= 2:
 
 
 @Gooey(
-    program_name="Frap DIff",
-    program_description="Frap2Diffusion",
+    program_name="FRAPdiff",
+    program_description="""FRAP and diffusion analysis on .tif movies containing an ImageJ ROI of the bleach rectangle.""",
     tabbed_groups=True,
     target="frapdiff.exe",  ### https://github.com/chriskiehl/Gooey/issues/219
     progress_regex=r"^#\s(?P<current>\d+)/(?P<total>\d+)\s###.*",
