@@ -200,7 +200,13 @@ def main_cli():
 
     """
 
-    parser = GooeyParser()
+    parser = GooeyParser(
+        description="""FRAP analysis on .tif movies containing an ImageJ ROI
+                       of the bleach rectangle. FRAPdiff estimates K_off and
+                       Diffusion parameters. Detail are described in further
+                       detail in Gerganova et al. https://www.biorxiv.org/content/10.1101/2020.12.18.423457v3
+                       """
+    )
     in_movies_parser = parser.add_argument_group("General")
 
     in_movies_parser.add_argument(
@@ -216,7 +222,7 @@ def main_cli():
         "--recursive",
         action="store_true",
         gooey_options={"initial_value": True},
-        help="Seach movies in input folder recursively",
+        help="Search movies in input folder recursively",
     )
 
     in_movies_parser.add_argument(
@@ -238,7 +244,7 @@ def main_cli():
         "--bleach_correction",
         action="store_true",
         gooey_options={"initial_value": True},
-        help="Perfom simple ratio-based bleach correction",
+        help="Perfom simple, ratio-based bleach correction in upper-left window",
     )
 
     bleach_corr_parser.add_argument(
@@ -246,7 +252,7 @@ def main_cli():
         "--correction_region_size",
         widget="IntegerField",
         gooey_options={"min": 0, "max": 999, "increment": 1, "initial_value": 150},
-        help="Size of bleach-correction region (upper left corner)",
+        help="Size of bleach-correction window (upper left corner)",
         type=int,
     )
 
@@ -266,7 +272,7 @@ def main_cli():
         "--extend",
         widget="DecimalField",
         gooey_options={"min": 0, "max": 3.0, "increment": 0.1, "initial_value": 1.5},
-        help="Extend original FRAP window to both sides",
+        help="Extend original FRAP window by this factor to both sides each.",
         type=float,
     )
 
@@ -275,7 +281,7 @@ def main_cli():
         "--mirror_values",
         widget="Dropdown",
         choices=["No", "first_half", "second_half"],
-        help="Mirror values",
+        help="Mirror intensity values. Use, when original profiles are not symmetric.",
         gooey_options={"initial_value": "first_half"},
         type=str,
     )
@@ -296,7 +302,7 @@ def main_cli():
         "--Koff_initial",
         widget="DecimalField",
         gooey_options={"min": 0, "max": 3.0, "increment": 0.01, "initial_value": 0.1},
-        help="Initial guess for Koff",
+        help="Initial guess for K_off",
         type=float,
     )
 
@@ -305,7 +311,7 @@ def main_cli():
         "--minimum_Lf",
         widget="DecimalField",
         gooey_options={"min": 0, "max": 20.0, "increment": 1.0, "initial_value": 8},
-        help="Minimum Lf",
+        help="Minimum L_f to restrict solver to reasonable values",
         type=float,
     )
 
@@ -314,7 +320,7 @@ def main_cli():
         "--maximum_Lf",
         widget="DecimalField",
         gooey_options={"min": 0, "max": 20.0, "increment": 1.0, "initial_value": 16},
-        help="Maximum Lf",
+        help="Maximum L_f to restrict solver to reasonable values",
         type=float,
     )
 
@@ -331,7 +337,7 @@ def main_cli():
     results = []
     n = len(all_mov_fns)
     for i, mov_fn in enumerate(all_mov_fns):
-        print(f"# {i+1}/{n} ### {mov_fn}")
+        print(f"\n# {i+1}/{n} ### {mov_fn}")
         sys.stdout.flush()
         try:
             result_dict = extract_frap_profiles_and_fit(
