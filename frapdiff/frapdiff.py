@@ -223,7 +223,7 @@ def main_cli():
         action="store_true",
         gooey_options={"initial_value": True},
         help="Search movies in input folder recursively",
-        default=True
+        default=False
     )
 
     in_movies_parser.add_argument(
@@ -246,7 +246,7 @@ def main_cli():
         action="store_true",
         gooey_options={"initial_value": True},
         help="Perfom simple, ratio-based bleach correction in upper-left window",
-        default=True
+        default=False
     )
 
     bleach_corr_parser.add_argument(
