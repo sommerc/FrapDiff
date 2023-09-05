@@ -175,7 +175,7 @@ if len(sys.argv) >= 2:
     program_name="FRAPdiff",
     program_description="""FRAP and diffusion analysis on .tif movies containing an ImageJ ROI of the bleach rectangle.""",
     tabbed_groups=True,
-    target="frapdiff.exe",  ### https://github.com/chriskiehl/Gooey/issues/219
+    target="frapdiff",  ### https://github.com/chriskiehl/Gooey/issues/219
     progress_regex=r"^#\s(?P<current>\d+)/(?P<total>\d+)\s###.*",
     progress_expr="current / total * 100",
     timing_options={
@@ -223,6 +223,7 @@ def main_cli():
         action="store_true",
         gooey_options={"initial_value": True},
         help="Search movies in input folder recursively",
+        default=True
     )
 
     in_movies_parser.add_argument(
@@ -245,6 +246,7 @@ def main_cli():
         action="store_true",
         gooey_options={"initial_value": True},
         help="Perfom simple, ratio-based bleach correction in upper-left window",
+        default=True
     )
 
     bleach_corr_parser.add_argument(
@@ -254,6 +256,7 @@ def main_cli():
         gooey_options={"min": 0, "max": 999, "increment": 1, "initial_value": 150},
         help="Size of bleach-correction window (upper left corner)",
         type=int,
+        default=150
     )
 
     frap_region_parser = parser.add_argument_group("FRAP region")
@@ -264,6 +267,7 @@ def main_cli():
         widget="Dropdown",
         choices=["vertical", "horizontal"],
         gooey_options={"initial_value": "vertical"},
+        default="vertical",
         type=str,
     )
 
@@ -274,6 +278,7 @@ def main_cli():
         gooey_options={"min": 0, "max": 3.0, "increment": 0.1, "initial_value": 1.5},
         help="Extend original FRAP window by this factor to both sides each.",
         type=float,
+        default=1.5
     )
 
     frap_region_parser.add_argument(
@@ -284,6 +289,7 @@ def main_cli():
         help="Mirror intensity values. Use, when original profiles are not symmetric.",
         gooey_options={"initial_value": "first_half"},
         type=str,
+        default="first_half"
     )
 
     fitting_parser = parser.add_argument_group("Fitting")
@@ -295,6 +301,7 @@ def main_cli():
         gooey_options={"min": 0, "max": 3.0, "increment": 0.01, "initial_value": 0.05},
         help="Initial guess for diffusion",
         type=float,
+        default=0.05
     )
 
     fitting_parser.add_argument(
@@ -304,6 +311,7 @@ def main_cli():
         gooey_options={"min": 0, "max": 3.0, "increment": 0.01, "initial_value": 0.1},
         help="Initial guess for K_off",
         type=float,
+        default=0.1
     )
 
     fitting_parser.add_argument(
@@ -313,6 +321,7 @@ def main_cli():
         gooey_options={"min": 0, "max": 20.0, "increment": 1.0, "initial_value": 8},
         help="Minimum L_f to restrict solver to reasonable values",
         type=float,
+        default=8
     )
 
     fitting_parser.add_argument(
@@ -322,6 +331,7 @@ def main_cli():
         gooey_options={"min": 0, "max": 20.0, "increment": 1.0, "initial_value": 16},
         help="Maximum L_f to restrict solver to reasonable values",
         type=float,
+        default=16
     )
 
     args = parser.parse_args()
